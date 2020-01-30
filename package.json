@@ -1,0 +1,29 @@
+{
+  "name": "social_rwchotelmixinslib",
+  "version": "1.0.0",
+  "description": "AllexJS lib with mixins for a RelationWithCandidates aware Hotel",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/social-libs/rwchotelmixins.git"
+  },
+  "keywords": [
+    "ecosystem:AllexJS",
+    "social",
+    "relation",
+    "with",
+    "candidates",
+    "hotel",
+    "mixin",
+    "lib"
+  ],
+  "author": "Luka Petrovic <lukapetrovicsi@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/social-libs/rwchotelmixins/issues"
+  },
+  "homepage": "https://github.com/social-libs/rwchotelmixins#readme"
+}
