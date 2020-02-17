@@ -39,6 +39,8 @@ function createServiceMixin (execlib) {
 
     klass.prototype['getInitiatorsOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], getInitiatorsFunc);
 
+    klass.prototype['getMatchesOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], getMatchesFunc);
+
     klass.prototype[fetchprofonname] = execSuite.dependentServiceMethod([], [rwccodename], fetchProfileFunc);
 
     klass.prototype['getCandidatesOn'+rwccodename] = function (username, filter) {
@@ -82,6 +84,10 @@ function createServiceMixin (execlib) {
 
   function getInitiatorsFunc (rwcsink, username, defer) {
     qlib.promise2defer(rwcsink.call('getInitiators', username), defer);
+  }
+
+  function getMatchesFunc (rwcsink, username, defer) {
+    qlib.promise2defer(rwcsink.call('getMatches', username), defer);
   }
 
   function blockRelationFunc (rwcsink, initiatorname, targetname, defer) {
