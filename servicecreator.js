@@ -1,11 +1,21 @@
-function createServiceMixin (execlib) {
+function createServiceMixin (execlib, vararglib) {
   'use strict';
 
   var lib = execlib.lib,
     q = lib.q,
     qlib = lib.qlib,
     execSuite = execlib.execSuite,
-    taskRegistry = execSuite.taskRegistry;
+    taskRegistry = execSuite.taskRegistry,
+    genericDependentMethodCreator = vararglib.genericDependentMethodCreator,
+    genfns = {
+      getCandidates: genericDependentMethodCreator('getCandidates', 2),
+      initiateRelation: genericDependentMethodCreator('initiateRelation', 2),
+      getInitiators: genericDependentMethodCreator('getInitiators', 1),
+      getMatches: genericDependentMethodCreator('getMatches', 1),
+      blockRelation: genericDependentMethodCreator('blockRelation', 2),
+      acceptRelation: genericDependentMethodCreator('acceptRelation', 2),
+      fetchProfile: genericDependentMethodCreator('fetchProfile', 1),
+    };
 
   function RWCHotelServiceMixin (prophash) {
     execSuite.RemoteServiceListenerServiceMixin.checkForImplementation(this);
@@ -29,19 +39,19 @@ function createServiceMixin (execlib) {
       mkfiltonname = 'makeFilterOn'+rwccodename,
       lastrwcevntonname = 'lastRWCEventOn'+rwccodename;
 
-    klass.prototype[rlygetcndtsonname] = execSuite.dependentServiceMethod([], [rwccodename], reallyGetCandidatesFunc);
+    klass.prototype[rlygetcndtsonname] = execSuite.dependentServiceMethod([], [rwccodename], genfns.getCandidates);
 
-    klass.prototype['initiateRelationOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], initiateRelationFunc);
+    klass.prototype['initiateRelationOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], genfns.initiateRelation);
 
-    klass.prototype['blockRelationOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], blockRelationFunc);
+    klass.prototype['blockRelationOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], genfns.blockRelation);
 
-    klass.prototype['acceptRelationOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], acceptRelationFunc);
+    klass.prototype['acceptRelationOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], genfns.acceptRelation);
 
-    klass.prototype['getInitiatorsOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], getInitiatorsFunc);
+    klass.prototype['getInitiatorsOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], genfns.getInitiators);
 
-    klass.prototype['getMatchesOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], getMatchesFunc);
+    klass.prototype['getMatchesOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], genfns.getMatches);
 
-    klass.prototype[fetchprofonname] = execSuite.dependentServiceMethod([], [rwccodename], fetchProfileFunc);
+    klass.prototype[fetchprofonname] = execSuite.dependentServiceMethod([], [rwccodename], genfns.fetchProfile);
 
     klass.prototype['getCandidatesOn'+rwccodename] = function (username, filter) {
       var errstring;
@@ -72,35 +82,6 @@ function createServiceMixin (execlib) {
       });
     };
   };
-
-
-  function reallyGetCandidatesFunc (rwcsink, username, filter, defer) {
-    qlib.promise2defer(rwcsink.call('getCandidates', username, filter), defer);
-  }
-
-  function initiateRelationFunc (rwcsink, initiatorname, targetname, defer) {
-    qlib.promise2defer(rwcsink.call('initiateRelation', initiatorname, targetname), defer);
-  }
-
-  function getInitiatorsFunc (rwcsink, username, defer) {
-    qlib.promise2defer(rwcsink.call('getInitiators', username), defer);
-  }
-
-  function getMatchesFunc (rwcsink, username, defer) {
-    qlib.promise2defer(rwcsink.call('getMatches', username), defer);
-  }
-
-  function blockRelationFunc (rwcsink, initiatorname, targetname, defer) {
-    qlib.promise2defer(rwcsink.call('blockRelation', initiatorname, targetname), defer);
-  }
-
-  function acceptRelationFunc (rwcsink, initiatorname, targetname, defer) {
-    qlib.promise2defer(rwcsink.call('acceptRelation', initiatorname, targetname), defer);
-  }
-
-  function fetchProfileFunc (rwcsink, username, defer) {
-    qlib.promise2defer(rwcsink.call('fetchProfile', username), defer);
-  }
 
   return RWCHotelServiceMixin;
 }
