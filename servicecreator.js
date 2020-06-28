@@ -8,7 +8,7 @@ function createServiceMixin (execlib, vararglib) {
     taskRegistry = execSuite.taskRegistry,
     genericDependentMethodCreator = vararglib.genericDependentMethodCreator,
     genfns = {
-      getCandidates: genericDependentMethodCreator('getCandidates', 2),
+      getCandidates: genericDependentMethodCreator('getCandidates', 3),
       initiateRelation: genericDependentMethodCreator('initiateRelation', 2),
       getInitiators: genericDependentMethodCreator('getInitiators', 1),
       getMatches: genericDependentMethodCreator('getMatches', 1),
@@ -36,7 +36,8 @@ function createServiceMixin (execlib, vararglib) {
   RWCHotelServiceMixin.addMethods = function (klass, rwccodename) {
     var rlygetcndtsonname = 'reallyGetCandidatesOn'+rwccodename,
       fetchprofonname = 'fetchProfileOn'+rwccodename,
-      mkfiltonname = 'makeFilterOn'+rwccodename,
+      mkfilt1onname = 'makeFilter1On'+rwccodename,
+      mkfilt2onname = 'makeFilter2On'+rwccodename,
       lastrwcevntonname = 'lastRWCEventOn'+rwccodename;
 
     klass.prototype[rlygetcndtsonname] = execSuite.dependentServiceMethod([], [rwccodename], genfns.getCandidates);
@@ -55,17 +56,22 @@ function createServiceMixin (execlib, vararglib) {
 
     klass.prototype['getCandidatesOn'+rwccodename] = function (username, filter) {
       var errstring;
-      if (!lib.isFunction(this[mkfiltonname])) {
-        errstring = this.constructor.name+' does not have the method '+mkfiltonname+'(askerfilter, askerprofile) implemented';
+      if (!lib.isFunction(this[mkfilt1onname])) {
+        errstring = this.constructor.name+' does not have the method '+mkfilt1onname+'(askerfilter, askerprofile) implemented';
+        console.error(errstring);
+        return q.reject('METHOD_NOT_IMPLEMENTED', errstring);
+      }
+      if (!lib.isFunction(this[mkfilt2onname])) {
+        errstring = this.constructor.name+' does not have the method '+mkfilt2onname+'(askerfilter, askerprofile) implemented';
         console.error(errstring);
         return q.reject('METHOD_NOT_IMPLEMENTED', errstring);
       }
       try {
         return this[fetchprofonname](username).then(
-          this[mkfiltonname].bind(this, filter)
+          twoFiltersGetter.bind(this, mkfilt1onname, mkfilt2onname, filter)
         ).then(
-          filt => {
-            return this[rlygetcndtsonname](username, filt);
+          filters => {
+            return this[rlygetcndtsonname](username, filters[0], filters[1]);
           }
         );
       } catch (e) {
@@ -82,6 +88,18 @@ function createServiceMixin (execlib, vararglib) {
       });
     };
   };
+
+  //virtual statics
+  function twoFiltersGetter (mkfilt1onname, mkfilt2onname, filter, userprofile) {
+    var ret = q.all([
+      this[mkfilt1onname](filter, userprofile),
+      this[mkfilt2onname](filter, userprofile)
+    ]);
+    mkfilt1onname = null;
+    mkfilt2onname = null;
+    filter = null;
+    return ret;
+  }
 
   return RWCHotelServiceMixin;
 }
