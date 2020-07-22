@@ -9,11 +9,12 @@ function createServiceMixin (execlib, vararglib) {
     genericDependentMethodCreator = vararglib.genericDependentMethodCreator,
     genfns = {
       getCandidates: genericDependentMethodCreator('getCandidates', 3),
-      initiateRelation: genericDependentMethodCreator('initiateRelation', 2),
+      initiateRelation: genericDependentMethodCreator('initiateRelation', 3),
       getInitiators: genericDependentMethodCreator('getInitiators', 1),
       getMatches: genericDependentMethodCreator('getMatches', 1),
       blockRelation: genericDependentMethodCreator('blockRelation', 2),
-      acceptRelation: genericDependentMethodCreator('acceptRelation', 2),
+      acceptRelation: genericDependentMethodCreator('acceptRelation', 3),
+      rejectRelation: genericDependentMethodCreator('rejectRelation', 2),
       fetchProfile: genericDependentMethodCreator('fetchProfile', 1),
     };
 
@@ -47,6 +48,8 @@ function createServiceMixin (execlib, vararglib) {
     klass.prototype['blockRelationOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], genfns.blockRelation);
 
     klass.prototype['acceptRelationOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], genfns.acceptRelation);
+
+    klass.prototype['rejectRelationOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], genfns.rejectRelation);
 
     klass.prototype['getInitiatorsOn'+rwccodename] = execSuite.dependentServiceMethod([], [rwccodename], genfns.getInitiators);
 
